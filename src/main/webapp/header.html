@@ -1,0 +1,156 @@
+<script src="js/getParameter.js"></script>
+<script src="vue/vue.min.js"></script>
+<link rel="stylesheet" href="vue/iview.css">
+<script src="vue/iview.min.js"></script>
+<script>
+    $(function () {
+        $.get("user/findOne",{},function (data) {
+            var login_div = document.getElementById("login");
+            var logout_div = document.getElementById("login_out");
+            if(data.uid != -1) {
+                var msg = "Welcome Back, " + data.firstname + " " + data.lastname;
+                $("#span_username").html(msg);
+                logout_div .style.display = "none";
+                login_div.style.display = "block";
+            }
+
+            else{
+                logout_div .style.display = "block";
+                login_div.style.display = "none";
+            }
+
+        });
+
+        // 查询分类数据
+//         $.get("category/findAll",{},function(data){
+//             data=[{cid:1,cname:'国内游'},{},{}]
+//             var lis = '<li><a href="index.html">HOME</a></li>';
+//             遍历数组，拼接字符串
+//             for (var i = 0; i < data.length;i++){
+//                 //
+//                 var li = '<li><a href="route_list.html?cid='+data[i].cid+'">'+data[i].cname+'</a></li>';
+//                 lis += li;
+//             }
+
+//             拼接收藏排行榜的li，<li><a href="favoriterank.html">收藏排行榜</a></li>
+//             lis += '<li><a href="offer_service.html">Offer Tutorial Service</a></li>';
+//             将lis字符串，设置到ul的html内容中
+//             $("#category").html(lis);
+//         });
+
+        // 给搜索按钮绑定单击事件，获取搜索输入框的内容
+        $("#search-button").click(function (){
+            // 线路名称
+            var rname = $("#search_input").val();
+            var cid = getParameter("cid");
+            // 跳转路径 http://localhost/travel/route_list.html?cid=5，拼接上rname=xxx
+            location.href="http://localhost/travel/route_list.html?cid="+cid+"&rname="+rname;
+        });
+        
+    });
+
+
+</script>
+<div id="indexDemo1">
+<header id="header">
+<!--        <div class="top_banner">-->
+<!--            <img src="images/top_banner.jpg" alt="">-->
+<!--        </div>-->
+        <div class="shortcut">
+			<Modal
+	       		v-model="emailModal"
+	       		title="message"
+	       		ok-text="send"
+	       		cancel-text="cancel"
+	       		@on-ok="ok"
+	       		@on-cancel="cancel"
+	       		width="600"
+	       		>
+	       		
+	       		<div v-for="(items,key) in messageList">
+		        	<p>{{items.message}}</p>
+				</div>
+				<br>
+				<Row>
+	       			<i-select v-model="user" style="width:200px" clearable filterable>
+	        			<i-option v-for="item in userList" :value="item.username">{{ item.username }}</i-option>
+					</i-select>
+				</Row>
+				<Row>
+					<i-input style="margin-top: 10px;" v-model="emailSend" maxlength="100" show-word-limit type="textarea" placeholder="Enter something..." style="width: 400px"></i-input>
+				</Row>
+    		</Modal>
+            <!-- 未登录状态  -->
+            <div class="login_out" id="login_out">
+            	<a href="javascript:;" @click.prevent="emailOpen">message</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </div>
+
+            <!-- 登录状态  -->
+            <div class="login" id="login">
+
+                <span id="span_username"></span>
+                <a href="profile.html" class="collection">My Profile</a>
+                <a href="javascript:location.href='user/exit';">Logout</a>
+            </div>
+        </div>
+
+        <div class="header_wrap">
+            <div class="topbar">
+                <div class="logo">
+                    <a href="login.html"><img src="images/logo.png" alt=""></a>
+                </div>
+                <div class="search">
+                    <input name="" id="search_input" type="text" placeholder="Enter Keywords for Tutoring Service to Search"
+                           class="search_input" autocomplete="off">
+                    <a href="search.html;" id="search-button" class="search-button">Search</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    </div>
+    
+    <script type="text/javascript">
+	new Vue({
+		el: '#indexDemo1',
+		data () {
+            return {
+            	emailModal: false,
+            	emailSend: '',
+            	user: '',
+            	messageList: [],
+                userList: []
+            }
+		},
+		
+		created() {
+			let url = 'course/getUser';
+            $.post(url, {}, (resp) => {
+            	this.userList = resp.userList;
+            	this.messageList = resp.messageList;
+            }, 'json');
+			
+		},
+		
+		methods: {
+			emailOpen() {
+				this.emailModal = true;
+			},
+			
+			cancel () {
+				this.emailModal = false;
+			},
+			
+			ok () {
+				this.emailModal = false;
+			}
+		  },
+		
+		mounted () {
+        }
+	});
+</script>
+    <!-- 头部 end -->
+    
+    

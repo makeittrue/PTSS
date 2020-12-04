@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>REGISTER</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/register.css">
+    
+    <script src="js/jquery-3.3.1.js"></script>
+    
+    <script src="vue/vue.min.js"></script>
+	<link rel="stylesheet" href="vue/iview.css">
+	<script src="vue/iview.min.js"></script>
+	
+</head>
+<body>
+<!--引入头部-->
+<div id="header"></div>
+
+<div class="navitem">
+        <ul id="category" class="nav">
+			<li><a href="index.html">HOME</a></li>
+			<li class="nav-active"><a href="offer_service.html">Offer Tutorial Service</a></li>
+			<li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+<!-- 头部 end -->
+<div class="rg_layout" id="offerDemo">
+    <div class="rg_form clearfix">
+        <div class="rg_form_left">
+            <p>CREATE YOUR SERVICE OFFERING</p>
+        </div>
+        <div style="margin-top: 100px;margin-left: 200px">
+            <i-form ref="submitForm" label-width="180" :model="formData" :rules="ruleValidate" label-colon>
+		        		<form-item label="Service name" prop="title">
+		           	 		<i-input v-model="formData.title" style="width: 250px" placeholder="Enter your service name" clearable></i-input>
+		        		</form-item>
+		        		
+		        		<form-item label="Service Category">
+		        			<Radio-Group v-model="formData.type" vertical>
+						        <Radio label="Math">
+						            <span>Math</span>
+						        </Radio>
+						        <Radio label="Science">
+						            <span>Science</span>
+						        </Radio>
+						        <Radio label="Foreign Language">
+						            <span>Foreign Language</span>
+						        </Radio>
+						        <Radio label="Business">
+						            <span>Business</span>
+						        </Radio>
+						        <Radio label="Computer">
+						            <span>Computer</span>
+						        </Radio>
+    						</Radio-Group>
+		        		</form-item>
+		        		
+		        		<form-item label="Service Price / Hour">
+		        			<input-number :max="10000" :min="0" :step="0.1" v-model="formData.price" placeholder="Enter the price for the service" style="width: 250px"></input-number>
+		        		</form-item>
+		        		
+		        		<form-item label="Service Place" prop="place">
+		           	 		<i-input v-model="formData.place" style="width: 250px" placeholder="Enter the place for the service" clearable></i-input>
+		        		</form-item>
+		        		
+		        		<form-item label="Service Description" prop="description">
+		           	 		<i-input v-model="formData.description" style="width: 250px" placeholder="Enter the description for the service" clearable></i-input>
+		        		</form-item>
+	       		
+	       		<i-button style="margin-left: 200px;" type="success" @click="addOne">offer</i-button>
+    		</i-form>
+        </div>
+    </div>
+</div>
+<!--引入尾部-->
+<div id="footer"></div>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#offerDemo',
+		data () {
+            return {
+            	formData: {
+            		title: '',
+                	type: 'Math',
+                	price: 0,
+                	place: '',
+                	description: ''
+            	},
+            	
+            	ruleValidate: {
+            		title: [
+                        { required: true, message: 'No Empty！', trigger: 'blur' }
+                    ],
+                    place: [
+                    	{ required: true, message: 'No Empty！', trigger: 'blur' }
+                    ],
+                    description: [
+                    	{ required: true, message: 'No Empty！', trigger: 'blur' }
+                    ]
+                }
+            }
+		},
+		
+		created() {
+		},
+		
+		methods: {
+			addOne(){
+				this.$refs["submitForm"].validate((valid) => {
+                    if (valid) {
+                    	if(this.formData.title.indexOf(this.formData.type) != -1){
+                    		let url = 'course/offerCourse';
+                            $.post(url, this.formData, (resp) => {
+                            	this.$Message.success('save successful!');
+                            }, 'json');
+                    	}else{
+                    		this.$Message.error('name should include category！');
+                    	}
+                    	
+                    } 
+                })
+			}
+		},
+		
+		mounted () {
+			
+        }
+	});
+</script>
+
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+
+</body>
+</html>

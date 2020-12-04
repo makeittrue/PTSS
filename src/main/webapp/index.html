@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <title>TUTORIAL MASTER</title>
+	    <!-- Bootstrap -->
+	    <link href="css/bootstrap.min.css" rel="stylesheet">
+	    <link rel="stylesheet" type="text/css" href="css/common.css">
+	    <link rel="stylesheet" type="text/css" href="css/index.css">
+		
+	    <script src="js/jquery-3.3.1.js"></script>
+	    <script src="js/bootstrap.min.js"></script>
+<!-- 	    <script type="text/javascript" src="js/include.js"></script> -->
+		<script src="vue/vue.min.js"></script>
+		<link rel="stylesheet" href="vue/iview.css">
+		<script src="vue/iview.min.js"></script>
+	</head>
+<body>
+	<div id="indexDemo">
+	<!--引入头部-->
+    <div id="header"></div>
+
+	<div class="navitem">
+        <ul id="category" class="nav">
+			<li class="nav-active"><a href="index.html">HOME</a></li>
+			<li><a href="offer_service.html">Offer Tutorial Service</a></li>
+			<li><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+    
+    <section id="content">
+         <div style="float: left;">
+	    		<i-menu theme="light" active-name="1" style="width: 220px;height: 800px;" @on-select="jumpTo">
+	    			<Menu-Group title="CLASS">
+		                <Menu-Item id="math" name="Math">Math</Menu-Item>
+		                <Menu-Item id="science" name="Science">Science</Menu-Item>
+		                <Menu-Item id="foreign" name="Foreign Language">Foreign Language</Menu-Item>
+		                <Menu-Item id="business" name="Business">Business</Menu-Item>
+		    			<Menu-Item id="computer" name="Computer">Computer</Menu-Item>
+		    		</Menu-Group>
+	    		</i-menu>
+    		</div>
+        <section class="hemai_jx">
+            <div class="jx_top">
+                <div class="jx_tit">
+                    <img src="images/icon_5.jpg" alt="">
+                    <span>New</span>
+                </div>
+            </div>
+            
+            <Modal
+	       		v-model="detailModal"
+	       		title="detail"
+	       		width="700"
+	       		@on-cancel="cancel"
+	       		>
+
+			    <img src="images/jiangxuan_4.jpg" >
+       			<p>{{title}}</p>
+	        	<p>Service Price：<em>$</em><strong>{{price}}</strong><em>/hour</em> </p>
+	        	<p>Service Place: {{place}}</p>
+	        	<p>Service Description: {{description}}</p>
+	        	<br>
+	        	
+	        	<p style="color: red;">Comment:</p>
+		        <div v-for="(items,key) in commentList">
+		        	<p>{{items.comment}}</p>
+				</div>
+ 							
+		        <i-input style="margin-top: 10px;" v-model="commentSome" maxlength="100" show-word-limit type="textarea" placeholder="Enter something..." style="width: 400px"></i-input>
+		        <br>
+		        <a href="javascript:;" @click.prevent="openUser"> {{uid}} </a>
+		        
+		        <div slot="footer">
+		   			<i-button type="error" @click="cancel" >cancel</i-button>
+			  		<i-button type="primary" @click="comment" >comment</i-button>
+			  		<i-button type="primary" @click="buy" >buy</i-button>
+   				</div>
+    		</Modal>
+    		
+            <div class="jx_content">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="popularity">
+                    	<div class="row">
+                        	<div class="imglist-item" v-for="(items,key) in courselist">
+	 							<div class="col-md-3">
+	                                <a href="javascript:;">
+	                                    <img :src="items.picture" alt=""  @click="showDetail(items.id)">
+	                                    <div class="has_border">
+	                                        <h3>{{ items.title }}</h3>
+	                                        <div class="price"><em>$</em><strong>{{ items.price }}</strong><em>/hour</em></div>
+	                                    </div>
+	                                </a>
+	                            </div>
+ 							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 黑马精选end-->
+    </section>
+    </div>
+    <!-- 旅游 end-->
+   <!--导入底部-->
+    <div id="footer"></div>
+<script type="text/javascript">
+	new Vue({
+		el: '#indexDemo',
+		data () {
+            return {
+            	detailModal: false,
+            	type: 'Math',
+            	user: '',
+            	courselist: [],
+            	title: '',
+            	price: '',
+            	uid: '',
+            	id: '',
+            	place: '',
+            	description: '',
+            	commentSome: '',
+                commentList: []
+            	
+            }
+		},
+		
+		created() {
+		    $.get("header.html",function (data) {
+		        $("#header").html(data);
+		    });
+		    $.get("footer.html",function (data) {
+		        $("#footer").html(data);
+		    });
+			
+			let url = 'course/getCourseByType';
+            $.post(url, {type: this.type}, (resp) => {
+            	this.courselist = resp;
+            }, 'json');
+			
+		},
+		
+		methods: {
+			jumpTo (val) {
+				let url = 'course/getCourseByType';
+	            $.post(url, {type: val}, (resp) => {
+	            	this.courselist = resp;
+	            }, 'json');
+			},
+			
+			showDetail (id) {
+				let url = 'course/getDetail';
+	            $.post(url, {id: id}, (resp) => {
+	            	this.title = resp.course.title;
+	            	this.price = resp.course.price;
+	            	this.uid = resp.course.uid;
+	            	this.place = resp.course.place;
+	            	this.description = resp.course.description;
+	            	this.id = resp.course.id;
+	            	this.commentList = resp.comment;
+	            }, 'json');
+				this.detailModal = true;
+			},
+			
+			cancel () {
+				this.detailModal = false;
+				this.commentSome = '';
+			},
+			
+			ok () {
+				this.detailModal = false;
+			},
+			
+			openUser () {
+				location.href="profile.html?username="+this.uid;
+			},
+			
+			comment () {
+				let url = 'course/comment';
+	            $.post(url, {comment: this.commentSome, id: this.id}, (resp) => {
+	            	this.commentList = resp;
+	            	this.$Message.success('comment successful！');
+	            }, 'json');
+	            
+			},
+			
+			buy () {
+				location.href="index.html";
+			}
+			
+		  },
+		
+		mounted () {
+        }
+	});
+</script>
+</body>
+</html>

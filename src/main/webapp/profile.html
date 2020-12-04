@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8">
+    <title>PROFILE</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/register.css">
+    <!--导入jquery-->
+    <script src="js/jquery-3.3.1.js"></script>
+    		<script src="vue/vue.min.js"></script>
+		<link rel="stylesheet" href="vue/iview.css">
+		<script src="vue/iview.min.js"></script>
+    <script>
+        /*
+        * 表单校验（用正则校验）：
+        *     1.用户名：单词字符，长度8-20位
+        *     2.密码
+        *     3.email：邮件格式
+        *     4.姓名：非空
+        *     5.手机号：手机号格式
+        *     6.出生日期：非空
+        *     7.验证码：非空
+        * */
+
+        // 校验用户名
+        function checkUsername(){
+            // 1.获取用户名的值
+            var username = $("#username").val();
+            // 2.定义正则
+            var reg_username = /^\w{8,20}$/; // 单词字符，长度8到20位
+            // 3.判断，给出提示信息
+            var flag = reg_username.test(username);
+            if(flag){
+                // 用户名合法
+                $("#username").css("border","");
+            }else{
+                // 用户名非法
+                $("#username").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        // 校验密码
+        function checkPassword(){
+            // 1.获取用户名的值
+            var password = $("#password").val();
+            // 2.定义正则
+            var reg_password = /^\w{8,20}$/; // 单词字符，长度8到20位
+            // 3.判断，给出提示信息
+            var flag = reg_password.test(password);
+            if(flag){
+                // 用户名合法
+                $("#password").css("border","");
+            }else{
+                // 用户名非法
+                $("#password").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        // 校验邮箱
+        function checkEmail(){
+            // 1.获取用户名的值
+            var email = $("#email").val();
+            // 2.定义正则  itcast@163.com 843296031@qq.com
+            var reg_email = /^\w+@\w+\.\w+$/; //
+            // 3.判断，给出提示信息
+            var flag = reg_email.test(email);
+            if(flag){
+                // 用户名合法
+                $("#email").css("border","");
+            }else{
+                // 用户名非法
+                $("#email").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+
+
+        // 校验手机号
+        function checkTelephone(){
+            // 1.获取手机号的值
+            var telephone = $("#telephone").val();
+            // 2.定义正则  13207168553
+            var reg_telephone = /^1[3-9]\d{9}$/; //
+            // 3.判断，给出提示信息
+            var flag = reg_telephone.test(telephone);
+            if(flag){
+                // 手机号合法
+                $("#telephone").css("border","");
+            }else{
+                // 手机号非法
+                $("#telephone").css("border","1px solid red");
+            }
+            return flag;
+        }
+
+        function checkFirstName(){
+            var fname = $("#firstname").val();
+            var flag = fname.length > 0;
+            if(flag){
+                $("#firstname").css("border","");
+            }else{
+                $("#firstname").css("border","");
+            }
+            return flag;
+        }
+
+        function checkLastName(){
+            var fname = $("#lastname").val();
+            var flag = fname.length > 0;
+            if(flag){
+                $("#lastname").css("border","");
+            }else{
+                $("#lastname").css("border","");
+            }
+            return flag;
+        }
+
+
+
+
+        $(function(){
+            // 当表单提交时，调用所有的校验方法
+            $("#registerForm").submit(function(){
+                // $("#abc").click(function(){
+                // 1.发送数据到服务器
+                if(checkUsername() && checkPassword()&& checkEmail()) {
+                    // 校验通过，发送Ajax请求，提交表单的数据  username=zhangsan&password=123
+                    alert('test3');
+                    $.post("user/regist",$("#registerForm").serialize(),function(data){
+                        // 处理服务器响应的数据  data   {flag:true,errorMsg:"注册失败"}
+                        console.log(data);
+                        if (data.flag) {
+                            // 注册成功，跳转成功页面
+                            alert('successed');
+                            location.href = "profile.html";
+                        } else {
+                            // 注册失败,给errorMsg添加提示信息
+                            alert('failed');
+                            $("#errorMsg").html(data.errorMsg);
+                        }
+                    });
+                }
+                alert('test4');
+                // 2.不让页面跳转
+                return false;
+                // 如果匿名的function方法没有返回值或者返回位true，则表单提交，如果返回位false，则表单不提交
+            });
+
+            // 当某一个组件失去焦点时，调用对应的校验方法
+            $("#username").blur(checkUsername);
+            $("#password").blur(checkPassword);
+            $("#email").blur(checkEmail);
+            $("#telephone").blur(checkTelephone);
+            // $("#firstname").blur(checkFirstName());
+            // $("#lastname").blur(checkLastName());
+        });
+
+
+    </script>
+</head>
+<body>
+<!--引入头部-->
+<div id="profileDemo">
+<div id="header"></div>
+
+	<div class="navitem">
+        <ul id="category" class="nav">
+			<li><a href="index.html">HOME</a></li>
+			<li><a href="offer_service.html">Offer Tutorial Service</a></li>
+			<li class="nav-active"><a href="profile.html">Profile</a></li>
+        </ul>
+    </div>
+<!-- 头部 end -->
+<div class="rg_layout">
+    <div class="rg_form clearfix">
+        <div class="rg_form_left">
+            <p>PROFILE</p>
+        </div>
+        <div class="rg_form_center">
+            <div id="errorMsg" style="color: red;text-align: center"></div>
+            <!--注册表单-->
+            <form id="registerForm" action="user" method="post">
+                <table style="margin-top: -100px;">
+                    <tr>
+                        <td class="td_left">
+                            <label for="username">Username</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="text"  id="username" name="username" value="jisuanji">
+                        </td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <td class="td_left">
+                            <label for="password">Password</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="password" id="password" name="password"  value="12345678" >
+                        </td>
+                    </tr>
+                    <br>
+                    <!--                    <tr>-->
+                    <!--                        <td class="td_left">-->
+                    <!--                            <label for="hf">Hobby Field</label>-->
+                    <!--                        </td>-->
+                    <!--                        <td class="td_right">-->
+                    <!--                            <input type="text" id="hf" name="hf" value="Math">-->
+                    <!--                        </td>-->
+                    <!--                    </tr>-->
+                    <br>
+                    <tr>
+                        <td class="td_left">
+                            <label for="firstname">First Name</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="text" v-model="firstname" id="firstname" name="firstname">
+                        </td>
+                    </tr>
+                    <br>
+                    <tr>
+                        <td class="td_left">
+                            <label for="lastname">Last Name</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="text" name="lastname" id="lastname"  />
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td class="td_left">
+                            <label for="email">Email</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="text" id="email" name="email" value="17897987@163.com">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="td_left">
+                            <label for="telephone">Phone Number</label>
+                        </td>
+                        <td class="td_right">
+                            <input type="text" id="telephone" name="telephone" value="15583399393">
+                        </td>
+                    </tr>
+
+                    <br>
+                    <tr>
+                        <td class="td_left">
+                            <label for="sex">Sex</label>
+                        </td>
+                        <td class="td_right check">
+                            <input type="text" id="sex" name="sex" value="Male" readonly>
+<!--                            <p id="sex" >Male</p>-->
+                        </td>
+                    </tr>
+                    <!--                    <tr>-->
+                    <!--                        <td class="td_left">-->
+                    <!--                            <label for="pw">Pay way</label>-->
+                    <!--                        </td>-->
+                    <!--                        <td class="td_right check">-->
+                    <!--                            <input type="text" id="pw" name="pw" value="Wechat" readonly>-->
+                    <!--                        </td>-->
+                    <!--                    </tr>-->
+                    <tr>
+                        <td class="td_left">
+                        </td>
+                        <td class="td_right check">
+                            <input type="submit" class="submit" value="Save">
+                            <span id="msg" style="color: red;"></span>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<!--引入尾部-->
+<div id="footer"></div>
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+<script type="text/javascript">
+	new Vue({
+		el: '#profileDemo',
+		data () {
+            return {
+            	detailModal: false,
+            	username: '',
+            	firstname: '',
+            	type: 'Math',
+            	user: '',
+            	courselist: [],
+            	title: '',
+            	price: '',
+            	uid: '',
+            	id: '',
+            	place: '',
+            	description: '',
+            	commentSome: '',
+                commentList: []
+            	
+            }
+		},
+		
+		created() {
+			var request = { 
+					QueryString : function(val) { 
+					var uri = window.location.search; 
+					var re = new RegExp("" +val+ "\=([^\&\?]*)", "ig"); 
+					return ((uri.match(re))?(uri.match(re)[0].substr(val.length+1)):null); 
+					}
+					}
+	            
+	            if(request.QueryString("username")!=null){
+	            	 let url = 'course/getUserInfo';
+	                 $.post(url, {username: request.QueryString("username")}, (resp) => {
+	                	 this.username = resp.username;
+	                	 this.firstname = resp.firstname;
+//	                 	 $("#username").attr(data.username);
+	                 }, 'json');
+	            }
+		},
+		
+		methods: {
+			jumpTo (val) {
+				let url = 'course/getCourseByType';
+	            $.post(url, {type: val}, (resp) => {
+	            	this.courselist = resp;
+	            }, 'json');
+			},
+			
+			showDetail (id) {
+				let url = 'course/getDetail';
+	            $.post(url, {id: id}, (resp) => {
+	            	this.title = resp.course.title;
+	            	this.price = resp.course.price;
+	            	this.uid = resp.course.uid;
+	            	this.place = resp.course.place;
+	            	this.description = resp.course.description;
+	            	this.id = resp.course.id;
+	            	this.commentList = resp.comment;
+	            }, 'json');
+				this.detailModal = true;
+			},
+			
+			cancel () {
+				this.detailModal = false;
+				this.commentSome = '';
+			},
+			
+			ok () {
+				this.detailModal = false;
+			},
+			
+			
+			comment () {
+				let url = 'course/comment';
+	            $.post(url, {comment: this.commentSome, id: this.id}, (resp) => {
+	            	this.commentList = resp;
+	            	this.$Message.success('comment successful！');
+	            }, 'json');
+	            
+			},
+			
+			buy () {
+				location.href="index.html";
+			}
+			
+		  },
+		
+		mounted () {
+        }
+	});
+</script>
+</body>
+</html>
